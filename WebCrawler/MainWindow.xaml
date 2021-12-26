@@ -1,0 +1,71 @@
+﻿<Window x:Class="WebCrawler.MainWindow" x:Name="wndwMain"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms" 
+        xmlns:local="clr-namespace:WebCrawler"
+        mc:Ignorable="d" AllowDrop="True" PreviewDrop="wndwMain_PreviewDrop" Background="#FFE5E5E5"
+        Title="Web Crawler" Height="300" Width="700" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="24"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Menu Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="6">
+            <MenuItem Header="Application">
+                <MenuItem Header="Exit with backup"/>
+                <MenuItem Header="Exit without backup"/>
+                <MenuItem Header="Load backup"/>
+            </MenuItem>
+            <MenuItem Header="Information">
+                <MenuItem Header="About Me"/>
+            </MenuItem>
+        </Menu>
+        <TextBox x:Name="txtbxRootUrls" TextWrapping="Wrap" AllowDrop="True" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5" Margin="14" FontWeight="Bold"/>
+        <Button x:Name="btnStart" Content="Start Scan" Grid.Row="1" Grid.Column="5" Margin="14">
+            <Button.Style>
+                <Style TargetType="{x:Type Button}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Text.Length, ElementName=txtbxRootUrls, UpdateSourceTrigger=PropertyChanged}" Value="0">
+                            <Setter Property="IsEnabled" Value="False"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
+        <GroupBox Header="Scan Type" Grid.Row="2" Grid.Column="0" Grid.RowSpan="3" Grid.ColumnSpan="3" Margin="14">
+            <StackPanel Orientation="Vertical">
+                <RadioButton x:Name="rdbtnInternalScan" Content="Internal Scan" Margin="14" IsChecked="True"/>
+                <RadioButton x:Name="rdbtnExternalScan" Content="External Scan" Margin="14"/>
+                <RadioButton x:Name="rdbtnRSSorSitemap" Content="Scan only RSS or Sitemap.xml(If Exists)" Margin="14"/>
+            </StackPanel>
+        </GroupBox>
+        <GroupBox Header="Amount Of Max. Threads" Grid.Row="2" Grid.Column="3" Grid.RowSpan="3" Grid.ColumnSpan="3" Margin="14">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition Width="5*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Amount of Threads:(For each target)" TextWrapping="Wrap" Grid.Row="0" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,14"/>
+                <WindowsFormsHost Cursor="Arrow" Grid.Row="0" Grid.Column="1" VerticalAlignment="Top" Margin="14">
+                    <wf:NumericUpDown x:Name="nmrcAmountOfThreads" Cursor="Arrow" Minimum="1" Maximum="128" ReadOnly="True"/>
+                </WindowsFormsHost>
+            </Grid>
+        </GroupBox>
+    </Grid>
+</Window>

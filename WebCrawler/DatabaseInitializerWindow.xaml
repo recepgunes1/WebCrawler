@@ -1,0 +1,123 @@
+﻿<Window x:Class="WebCrawler.DatabaseInitializerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WebCrawler"
+        mc:Ignorable="d" Background="#FFE5E5E5"
+        Title="Database Initializer" Height="380" Width="430" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize">
+    <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="110"/>
+            <ColumnDefinition Width="300"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock Text="Database Provider:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+        <TextBlock Text="Database:" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+        <TextBlock Text="Authentication:" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+        <TextBlock Text="Server Name:" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+        <TextBlock Text="Username:" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+        <TextBlock Text="Password:" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+        <ComboBox x:Name="cmbDatabaseProvider" Grid.Row="0" Grid.Column="1" Margin="14" SelectedIndex="0">
+            <ComboBoxItem Content="MsSQL"/>
+            <ComboBoxItem Content="SQLite"/>
+            <ComboBoxItem Content="In-Memory"/>
+        </ComboBox>
+        <TextBox x:Name="txtbxDatabase" Grid.Row="1" Grid.Column="1" Margin="14">
+            <TextBox.Style>
+                <Style TargetType="{x:Type TextBox}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Path=SelectedIndex, ElementName=cmbDatabaseProvider}" Value="2">
+                            <Setter Property="IsEnabled" Value="False"/>
+                            <Setter Property="Text" Value=""/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBox.Style>
+        </TextBox>
+        <ComboBox x:Name="cmbAuthentication" Grid.Row="2" Grid.Column="1" Margin="14" SelectedIndex="0">
+            <ComboBoxItem Content="Windows Authentication"/>
+            <ComboBoxItem Content="SQL Server Authentication"/>
+            <ComboBox.Style>
+                <Style TargetType="{x:Type ComboBox}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Path=SelectedIndex, ElementName=cmbDatabaseProvider}" Value="0">
+                            <Setter Property="SelectedIndex" Value="0"/>
+                            <Setter Property="IsEnabled" Value="True"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Path=SelectedIndex, ElementName=cmbDatabaseProvider}" Value="1">
+                            <Setter Property="SelectedIndex" Value="-1"/>
+                            <Setter Property="IsEnabled" Value="False"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Path=SelectedIndex, ElementName=cmbDatabaseProvider}" Value="2">
+                            <Setter Property="SelectedIndex" Value="-1"/>
+                            <Setter Property="IsEnabled" Value="False"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ComboBox.Style>
+        </ComboBox>
+        <TextBox x:Name="txtbxServerName" Grid.Row="3" Grid.Column="1" Margin="14">
+            <TextBox.Style>
+                <Style TargetType="{x:Type TextBox}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Path=SelectedIndex, ElementName=cmbDatabaseProvider}" Value="1">
+                            <Setter Property="IsEnabled" Value="False"/>
+                            <Setter Property="Text" Value=""/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Path=SelectedIndex, ElementName=cmbDatabaseProvider}" Value="2">
+                            <Setter Property="IsEnabled" Value="False"/>
+                            <Setter Property="Text" Value=""/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBox.Style>
+        </TextBox>
+        <TextBox x:Name="txtbxUsername" Grid.Row="4" Grid.Column="1" Margin="14">
+            <TextBox.Style>
+                <Style TargetType="{x:Type TextBox}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Path=SelectedIndex, ElementName=cmbAuthentication}" Value="0">
+                            <Setter Property="IsEnabled" Value="False"/>
+                            <Setter Property="Text" Value=""/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Path=SelectedIndex, ElementName=cmbDatabaseProvider}" Value="1">
+                            <Setter Property="IsEnabled" Value="False"/>
+                            <Setter Property="Text" Value=""/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Path=SelectedIndex, ElementName=cmbDatabaseProvider}" Value="2">
+                            <Setter Property="IsEnabled" Value="False"/>
+                            <Setter Property="Text" Value=""/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBox.Style>
+        </TextBox>
+        <PasswordBox x:Name="pswdbxPassword" Grid.Row="5" Grid.Column="1" Margin="14">
+            <PasswordBox.Style>
+                <Style TargetType="{x:Type PasswordBox}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Path=SelectedIndex, ElementName=cmbAuthentication}" Value="0">
+                            <Setter Property="IsEnabled" Value="False"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Path=SelectedIndex, ElementName=cmbDatabaseProvider}" Value="1">
+                            <Setter Property="IsEnabled" Value="False"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Path=SelectedIndex, ElementName=cmbDatabaseProvider}" Value="2">
+                            <Setter Property="IsEnabled" Value="False"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </PasswordBox.Style>
+        </PasswordBox>
+        <Button x:Name="btnInit" Content="Initialize Database" Grid.Row="6" Grid.Column="1" Margin="14" Click="btnInit_Click"/>
+    </Grid>
+</Window>

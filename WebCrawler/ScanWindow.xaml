@@ -1,0 +1,43 @@
+﻿<Window x:Class="WebCrawler.ScanWindow" x:Name="wndwScan"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WebCrawler"
+        mc:Ignorable="d" 
+        Title="toros.edu.tr is scanning" Height="450" Width="800" ResizeMode="CanMinimize" Loaded="wndwScan_Loaded">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="4*"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="7*"/>
+            <RowDefinition Height="3*"/>
+        </Grid.RowDefinitions>
+        <DataGrid Grid.Row="0" Grid.Column="0" Margin="14" IsReadOnly="True" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Parent Url"/>
+                <DataGridTextColumn Header="Url"/>
+                <DataGridTextColumn Header="Title"/>
+                <DataGridTextColumn Header="Elapsed Time(ms)"/>
+                <DataGridTextColumn Header="Source Code(as zipped)"/>
+                <DataGridTextColumn Header="Inner Text(as zipped)"/>
+            </DataGrid.Columns>
+        </DataGrid>
+        <DataGrid Grid.Row="0" Grid.Column="1" Margin="14" IsReadOnly="True" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Status"/>
+                <DataGridTextColumn Header="Amount"/>
+            </DataGrid.Columns>
+        </DataGrid>
+        <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="0">
+            <Button Content="Start" Margin="14,14,14,7"/>
+            <Button Content="Pause" Margin="14,7,14,7"/>
+            <Button Content="Stop" Margin="14,7,14,7"/>
+        </StackPanel>
+        <Grid Grid.Row="1" Grid.Column="1">
+            <TextBlock x:Name="txtbxClock" Text="99:99:99" Margin="14" FontWeight="ExtraBold" FontSize="55"/>
+        </Grid>
+    </Grid>
+</Window>
