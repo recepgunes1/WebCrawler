@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WebCrawler"
         mc:Ignorable="d" 
-        Title="toros.edu.tr is scanning" Height="450" Width="800" ResizeMode="CanMinimize" Loaded="wndwScan_Loaded">
+        Height="450" Width="800" ResizeMode="CanMinimize" Loaded="wndwScan_Loaded">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="4*"/>

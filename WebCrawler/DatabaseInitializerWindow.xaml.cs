@@ -1,19 +1,8 @@
-﻿using DBEntity;
-using DBEntity.Context;
+﻿using DBEntity.Context;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using WebCrawler.Other;
 
 namespace WebCrawler
@@ -74,7 +63,7 @@ namespace WebCrawler
                 }
                 MessageBox.Show(ErrorMessage, "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            catch(Exception Ex)
+            catch (Exception Ex)
             {
                 MessageBox.Show(Ex.Message, "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
             }
