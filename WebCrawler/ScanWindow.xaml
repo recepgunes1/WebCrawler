@@ -37,7 +37,7 @@
             <Button Content="Stop" Margin="14,7,14,7"/>
         </StackPanel>
         <Grid Grid.Row="1" Grid.Column="1">
-            <TextBlock x:Name="txtbxClock" Text="99:99:99" Margin="14" FontWeight="ExtraBold" FontSize="55"/>
+            <TextBlock x:Name="txtbxClock" Margin="14" FontWeight="ExtraBold" FontSize="55"/>
         </Grid>
     </Grid>
 </Window>
