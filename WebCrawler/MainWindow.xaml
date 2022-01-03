@@ -6,7 +6,7 @@
         xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms" 
         xmlns:local="clr-namespace:WebCrawler"
         mc:Ignorable="d" AllowDrop="True" PreviewDrop="wndwMain_PreviewDrop" Background="#FFE5E5E5"
-        Title="Web Crawler" Height="300" Width="700" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen">
+        Title="Web Crawler" Height="300" Width="700" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Icon="Icons/spider-robot.ico">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="24"/>

@@ -6,7 +6,26 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationIcon>Icons\web-crawler.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Icons\database.ico" />
+    <None Remove="Icons\spider-robot.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <SplashScreen Include="Icons\web-crawler.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Icons\database.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Icons\spider-robot.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="HtmlAgilityPack" Version="1.11.39" />

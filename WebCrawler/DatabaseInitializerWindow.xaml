@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WebCrawler" x:Name="wndwDatabaseInitializer"
         mc:Ignorable="d" Background="#FFE5E5E5" Closing="wndwDatabaseInitializer_Closing"
-        Title="Database Initializer" Height="380" Width="430" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize">
+        Title="Database Initializer" Height="380" Width="430" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize" Icon="Icons/database.ico">
     <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>

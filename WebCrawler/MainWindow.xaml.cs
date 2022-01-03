@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -41,7 +42,7 @@ namespace WebCrawler
             string[] arrUrls = txtbxRootUrls.Text.Split(';');
             foreach (var vrUrl in arrUrls)
             {
-                ScanWindow window = new(vrUrl);
+                ScanWindow window = new(vrUrl, Convert.ToInt32(nmrcAmountOfThreads.Value));
                 window.Show();
             }
         }

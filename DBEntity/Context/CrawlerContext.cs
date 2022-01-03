@@ -45,6 +45,7 @@ namespace DBEntity.Context
             modelBuilder.ApplyConfiguration(new ApplicationMapping());
             modelBuilder.ApplyConfiguration(new QueueMapping());
             modelBuilder.ApplyConfiguration(new ScanMapping());
+            modelBuilder.UseCollation("Turkish_CI_AS");
             base.OnModelCreating(modelBuilder);
         }
     }

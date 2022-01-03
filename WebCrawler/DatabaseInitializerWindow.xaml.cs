@@ -1,5 +1,4 @@
 ﻿using DBEntity.Context;
-using System;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -19,59 +18,35 @@ namespace WebCrawler
 
         private void btnInit_Click(object sender, RoutedEventArgs e)
         {
-            btnInit.IsEnabled = false;
-            btnInit.Content = "Database is being initialized.";
-            try
+            RegistryOperations registry = new();
+            int irDatabaseProvider = cmbDatabaseProvider.SelectedIndex;
+            int irAuthentication = cmbAuthentication.SelectedIndex;
+            string DatabaseProvider = cmbDatabaseProvider.SelectedItem.ToString().Split(':').Last().Trim();
+            string ConnectionString = string.Empty;
+            switch (irDatabaseProvider)
             {
-                RegistryOperations registry = new();
-                int irDatabaseProvider = cmbDatabaseProvider.SelectedIndex;
-                int irAuthentication = cmbAuthentication.SelectedIndex;
-                string DatabaseProvider = cmbDatabaseProvider.SelectedItem.ToString().Split(':').Last().Trim();
-                string ConnectionString = string.Empty;
-                switch (irDatabaseProvider)
-                {
-                    case 0: //MsSQL
-                        var vrTemp = txtbxServerName.Text.Contains("\\\\") ? txtbxServerName.Text : txtbxServerName.Text.Replace("\\", "\\\\");
-                        switch (irAuthentication)
-                        {
-                            case 0: //Windows
-                                ConnectionString = $"Server={vrTemp};Database={txtbxDatabase.Text};Integrated Security=true;";
-                                break;
-                            case 1: //Username-Password
-                                ConnectionString = $"Server={vrTemp};Database={txtbxDatabase.Text};User id={txtbxUsername.Text};Password={pswdbxPassword.Password};Integrated Security=true;";
-                                break;
-                        }
-                        break;
-                    case 1: //SQLite
-                        ConnectionString = $"Data Source={Directory.GetCurrentDirectory()}\\{txtbxDatabase.Text}.db;";
-                        break;
-                    case 2: //In-Memory
-                        ConnectionString = $"Data Source=:memory:;Version=3;New=True;";
-                        break;
-
-                }
-                registry.SaveRegistry(DatabaseProvider, ConnectionString);
-                CrawlerContext context = new();
-                this.Close();
+                case 0: //MsSQL
+                    var vrTemp = txtbxServerName.Text.Contains("\\\\") ? txtbxServerName.Text : txtbxServerName.Text.Replace("\\", "\\\\");
+                    switch (irAuthentication)
+                    {
+                        case 0: //Windows
+                            ConnectionString = $"Server={vrTemp};Database={txtbxDatabase.Text};Integrated Security=true;";
+                            break;
+                        case 1: //Username-Password
+                            ConnectionString = $"Server={vrTemp};Database={txtbxDatabase.Text};User id={txtbxUsername.Text};Password={pswdbxPassword.Password};Integrated Security=true;";
+                            break;
+                    }
+                    break;
+                case 1: //SQLite
+                    ConnectionString = $"Data Source={Directory.GetCurrentDirectory()}\\{txtbxDatabase.Text}.db;";
+                    break;
+                case 2: //In-Memory
+                    ConnectionString = $"Data Source=:memory:;Version=3;New=True;";
+                    break;
             }
-            catch (AggregateException Ex)
-            {
-                string ErrorMessage = string.Empty;
-                foreach (var vrInnerException in Ex.InnerExceptions)
-                {
-                    ErrorMessage += vrInnerException.Message;
-                }
-                MessageBox.Show(ErrorMessage, "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            catch (Exception Ex)
-            {
-                MessageBox.Show(Ex.Message, "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            finally
-            {
-                btnInit.IsEnabled = true;
-                btnInit.Content = "Initialize Database";
-            }
+            registry.SaveRegistry(DatabaseProvider, ConnectionString);
+            CrawlerContext context = new();
+            this.Close();
         }
         private void wndwDatabaseInitializer_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {

@@ -1,12 +1,13 @@
 ﻿using System.IO;
 using System.IO.Compression;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace WebCrawler.Other
 {
-    internal class CompressionOperation
+    public static class CompressionOperation
     {
-        public static byte[] Zip(string uncompressed)
+        public static byte[] Zip(this string uncompressed)
         {
             using (var outputMemory = new MemoryStream())
             {
@@ -35,6 +36,19 @@ namespace WebCrawler.Other
                 }
             }
             return ret;
+        }
+        public static string EncryptSHA256(this string plaintext)
+        {
+            using (SHA256 sha = SHA256.Create())
+            {
+                StringBuilder builder = new();
+                byte[] bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(plaintext));
+                for (int i = 0; i < bytes.Length; i++)
+                {
+                    builder.Append(bytes[i].ToString("X2"));
+                }
+                return builder.ToString();
+            }
         }
     }
 }
