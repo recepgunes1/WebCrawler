@@ -97,6 +97,14 @@ namespace WebCrawler.Other
             }
             return scan;
         }
+        private void Dequeue(Queue item)
+        {
+            using (CrawlerContext context = new())
+            {
+                context.Queue.Remove(item);
+                context.SaveChanges();
+            }
+        }
         public void InitializeInternalQueue()
         {
             HttpResponse response = Task.Run(() => { return DownloadSourceCodeSync(this.Url); }).Result;
@@ -158,23 +166,6 @@ namespace WebCrawler.Other
                 }
             }
         }
-        public void Enqueue(string _Url, string _Host)
-        {
-            using (CrawlerContext context = new())
-            {
-                Queue queue = new() { Url = _Url, Host = _Host };
-                context.Queue.Add(queue);
-                context.SaveChanges();
-            }
-        }
-        private void Dequeue(Queue item)
-        {
-            using (CrawlerContext context = new())
-            {
-                context.Queue.Remove(item);
-                context.SaveChanges();
-            }
-        }
         public void InternalScan()
         {
             if (blFlag)
@@ -229,5 +220,115 @@ namespace WebCrawler.Other
             blFlag = true;
             InternalScan();
         }
+        public void InitializeExternalQueue()
+        {
+            HttpResponse response = Task.Run(() => { return DownloadSourceCodeSync(this.Url); }).Result;
+            var vrUrls = GetUrlsFromSourceCode(response.SourceCode);
+            if (vrUrls != null)
+            {
+                foreach (var vrUrl in vrUrls)
+                {
+                    using (CrawlerContext context = new())
+                    {
+                        using (var vrTransaction = context.Database.BeginTransaction())
+                        {
+                            try
+                            {
+                                Queue queue = new() { Url = vrUrl, Host = this.Host };
+                                context.Queue.Add(queue);
+                                context.SaveChanges();
+                                vrTransaction.Commit();
+                            }
+                            catch
+                            {
+                                vrTransaction.Rollback();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        public void InitializeExternalQueue(IEnumerable<string> Urls)
+        {
+            if (Urls != null)
+            {
+                foreach (var vrUrl in Urls)
+                {
+                    if(UrlOperations.DoTheyHaveSameHost(vrUrl, this.Host))
+                    {
+                        using (CrawlerContext context = new())
+                        {
+                            using (var vrTransaction = context.Database.BeginTransaction())
+                            {
+                                try
+                                {
+                                    Queue queue = new() { Url = vrUrl, Host = this.Host };
+                                    context.Queue.Add(queue);
+                                    context.SaveChanges();
+                                    vrTransaction.Commit();
+                                }
+                                catch
+                                {
+                                    vrTransaction.Rollback();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        public void ExternalScan()
+        {
+            if (blFlag)
+            {
+                using (CrawlerContext context = new())
+                {
+                    var vrUrls = context.Scan.ToList().Where(p => UrlOperations.DoTheyHaveSameHost(p.Url, this.Host)).Select(p => p.Url).ToHashSet();
+                    var vrParentUrls = context.Scan.ToList().Where(p => UrlOperations.DoTheyHaveSameHost(p.Url, this.Host)).Select(p => p.ParentUrl).ToHashSet();
+                    var vrSubParentUrls = vrUrls.Where(p => !vrParentUrls.Contains(p) && UrlOperations.DoTheyHaveSameHost(p, this.Host)).ToHashSet();
+                    InitializeExternalQueue(vrSubParentUrls);
+                }
+            }
+            else
+            {
+                InitializeExternalQueue();
+            }
+            var Queue = new CrawlerContext().Queue.ToList().Where(p => UrlOperations.DoTheyHaveSameHost(p.Url, this.Host)).ToList();
+            if (Queue.Count == 0)
+                return;
+            foreach (var item in Queue)
+            {
+                Dequeue(item);
+                var vrResponse = Task.Run(() => { return DownloadSourceCodeSync(item.Url); }).Result;
+                var vrSubUrls = GetUrlsFromSourceCode(vrResponse.SourceCode);
+                if (vrSubUrls != null)
+                {
+                    foreach (var vrSubUrl in vrSubUrls)
+                    {
+                        using (CrawlerContext context = new())
+                        {
+                            using (var vrTransaction = context.Database.BeginTransaction())
+                            {
+                                if (context.Scan.ToHashSet().Where(p => UrlOperations.DoTheyHaveSameHost(p.Url, this.Host)).Select(p => p.Url).Contains(vrSubUrl))
+                                    continue;
+                                try
+                                {
+                                    context.Scan.Add(CreateScanNode(vrSubUrl, item.Url));
+                                    context.SaveChanges();
+                                    vrTransaction.Commit();
+                                }
+                                catch
+                                {
+                                    vrTransaction.Rollback();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            blFlag = true;
+            ExternalScan();
+        }
+
     }
 }

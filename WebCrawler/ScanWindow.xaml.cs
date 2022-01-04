@@ -26,8 +26,8 @@ namespace WebCrawler
         private void wndwScan_Loaded(object sender, RoutedEventArgs e)
         {
             this.Title = $"{Url} is scanning...";
-            crawler.InternalScan();
-
+            //crawler.InternalScan();
+            crawler.ExternalScan();
         }
     }
 }
