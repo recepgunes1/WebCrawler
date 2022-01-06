@@ -11,6 +11,7 @@
         public string CompressedSourceCode { get; set; }
         public string CompressedInnerText { get; set; }
         public DateTime DiscoveryDate { get; set; }
+        public int DepthLevel { get; set; }
         public long FetchTimeMS { get; set; }
     }
 }

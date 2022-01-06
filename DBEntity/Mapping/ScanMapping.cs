@@ -16,6 +16,7 @@ namespace DBEntity.Mapping
             builder.Property(p => p.Url).IsRequired();
             builder.Property(p => p.Host).IsRequired();
             builder.Property(p => p.DiscoveryDate).IsRequired();
+            builder.Property(p => p.DepthLevel).IsRequired();
             builder.Property(p => p.FetchTimeMS).IsRequired();
 
             //Can be Null
