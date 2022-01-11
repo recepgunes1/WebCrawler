@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using DBEntity.Context;
+using System.Windows;
 using WebCrawler.Other;
 
 
@@ -9,7 +10,7 @@ namespace WebCrawler
     /// </summary>
     public partial class App : Application
     {
-        private volatile bool _insideFirstChanceExceptionHandler;
+        //private volatile bool _insideFirstChanceExceptionHandler;
         public App()
         {
             //AppDomain currentDomain = AppDomain.CurrentDomain;
@@ -43,6 +44,10 @@ namespace WebCrawler
             RegistryOperations registryOperations = new();
             if (registryOperations.DoesDatabaseExist())
             {
+                using (CrawlerContext context = new())
+                {
+                    context.Database.EnsureCreated();
+                }
                 MainWindow mainWindow = new();
                 mainWindow.Show();
             }

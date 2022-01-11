@@ -44,6 +44,7 @@ namespace WebCrawler
             {
                 ScanWindow window = new(vrUrl, Convert.ToInt32(nmrcAmountOfThreads.Value));
                 window.Show();
+                System.Windows.Threading.Dispatcher.Run();
             }
         }
     }

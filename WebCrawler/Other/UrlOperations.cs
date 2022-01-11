@@ -1,4 +1,5 @@
-﻿using HtmlAgilityPack;
+﻿using DBEntity.Models;
+using HtmlAgilityPack;
 using System;
 using System.IO;
 
@@ -20,9 +21,25 @@ namespace WebCrawler.Other
             }
             return false;
         }
+
+        public static bool IsValidUrl(this string Url)
+        {
+            return Uri.TryCreate(Url, UriKind.Absolute, out Uri? uriResult) && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+        }
+
         public static bool DoTheyHaveSameHost(string Url, string Host)
         {
-            return new Uri(Url).Host == Host;
+            return new Uri(Url).Host.Contains(Host);
         }
+
+        public static bool DoTheyHaveSameHost(this Scan Node, string Host)
+        {
+            return Node.Host.Contains(Host);
+        }
+        public static bool DoTheyHaveSameHost(this Queue Node, string Host)
+        {
+            return Node.Host.Contains(Host);
+        }
+
     }
 }

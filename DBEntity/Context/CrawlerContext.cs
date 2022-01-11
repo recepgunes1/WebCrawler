@@ -16,6 +16,7 @@ namespace DBEntity.Context
         public DbSet<Scan> Scan { get; set; }
         public CrawlerContext() : base()
         {
+            Database.SetCommandTimeout(int.MaxValue);
             Database.EnsureCreated();
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -28,10 +29,10 @@ namespace DBEntity.Context
                 switch (DatabaseProiver)
                 {
                     case "MsSQL":
-                        optionsBuilder.UseSqlServer(ConnectionString);
+                        optionsBuilder.UseSqlServer(ConnectionString, p => p.MaxBatchSize(1));
                         break;
                     case "SQLite":
-                        optionsBuilder.UseSqlite(ConnectionString);
+                        optionsBuilder.UseSqlite(ConnectionString, p => p.MaxBatchSize(1));
                         break;
                     case "In-Memory":
                         optionsBuilder.UseInMemoryDatabase(ConnectionString);

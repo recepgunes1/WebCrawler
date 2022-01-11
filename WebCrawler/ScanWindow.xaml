@@ -5,39 +5,29 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WebCrawler"
         mc:Ignorable="d" 
-        Height="450" Width="800" ResizeMode="CanMinimize" Loaded="wndwScan_Loaded" Icon="Icons/spider-robot.ico">
+        Height="500" Width="1000" Loaded="wndwScan_Loaded" Icon="Icons/spider-robot.ico">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="4*"/>
-            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="7*"/>
+            <ColumnDefinition Width="3*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="7*"/>
-            <RowDefinition Height="3*"/>
+            <RowDefinition Height="10*"/>
         </Grid.RowDefinitions>
-        <DataGrid Grid.Row="0" Grid.Column="0" Margin="14" IsReadOnly="True" AutoGenerateColumns="False">
+        <DataGrid x:Name="dtgrdScanResult" Grid.Row="0" Grid.Column="0" Margin="14" IsReadOnly="True" AutoGenerateColumns="False" AlternatingRowBackground="#FFE5E5E5">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Parent Url"/>
-                <DataGridTextColumn Header="Url"/>
-                <DataGridTextColumn Header="Title"/>
-                <DataGridTextColumn Header="Elapsed Time(ms)"/>
-                <DataGridTextColumn Header="Source Code(as zipped)"/>
-                <DataGridTextColumn Header="Inner Text(as zipped)"/>
+                <DataGridTextColumn Header="Parent Url" Binding="{Binding Path=UrlHash}"/>
+                <DataGridTextColumn Header="Url" Binding="{Binding Path=Url}"/>
+                <DataGridTextColumn Header="Title" Binding="{Binding Path=Title}"/>
+                <DataGridTextColumn Header="Elapsed Time (MS)" Binding="{Binding Path=FetchTimeMS}"/>
+                <DataGridTextColumn Header="Discovery Date" Binding="{Binding Path=DiscoveryDate}"/>
             </DataGrid.Columns>
         </DataGrid>
-        <DataGrid Grid.Row="0" Grid.Column="1" Margin="14" IsReadOnly="True" AutoGenerateColumns="False">
+        <DataGrid x:Name="dtgrdStatusOfTasks" Grid.Row="0" Grid.Column="1" Margin="14" IsReadOnly="True" AutoGenerateColumns="False" AlternatingRowBackground="#FFE5E5E5">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Status"/>
-                <DataGridTextColumn Header="Amount"/>
+                <DataGridTextColumn Header="Status" Binding="{Binding Path=Status}"/>
+                <DataGridTextColumn Header="Amount" Binding="{Binding Path=Amount}"/>
             </DataGrid.Columns>
         </DataGrid>
-        <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="0">
-            <Button Content="Start" Margin="14,14,14,7"/>
-            <Button Content="Pause" Margin="14,7,14,7"/>
-            <Button Content="Stop" Margin="14,7,14,7"/>
-        </StackPanel>
-        <Grid Grid.Row="1" Grid.Column="1">
-            <TextBlock x:Name="txtbxClock" Margin="14" FontWeight="ExtraBold" FontSize="55"/>
-        </Grid>
     </Grid>
 </Window>

@@ -9,7 +9,9 @@ namespace DBEntity.Mapping
         public void Configure(EntityTypeBuilder<Scan> builder)
         {
             //Primary Key
-            builder.HasKey(p => p.UrlHash);
+            builder.HasKey(p => p.ID);
+            builder.HasIndex(p => p.UrlHash).IsUnique();
+
 
             //Not Null
             builder.Property(p => p.UrlHash).IsRequired();

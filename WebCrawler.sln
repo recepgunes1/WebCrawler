@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebCrawler", "WebCrawler\WebCrawler.csproj", "{1BA9163E-BB6E-4476-B581-F731A7A2C67F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DBEntity", "DBEntity\DBEntity.csproj", "{B4658652-E7E0-451D-9042-69CD509BCDE2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DBEntity", "DBEntity\DBEntity.csproj", "{B4658652-E7E0-451D-9042-69CD509BCDE2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

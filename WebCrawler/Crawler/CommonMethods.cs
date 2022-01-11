@@ -1,13 +1,11 @@
 ﻿using DBEntity.Context;
 using DBEntity.Models;
 using HtmlAgilityPack;
-using System;
-using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore.Storage;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using WebCrawler.Classes;
 using WebCrawler.Other;
@@ -39,7 +37,6 @@ namespace WebCrawler.Crawler
             }
             catch
             {
-                System.Diagnostics.Debug.Print(Target);
                 httpResponse.SourceCode = string.Empty;
             }
             stopwatch.Stop();
@@ -57,9 +54,9 @@ namespace WebCrawler.Crawler
             return null;
         }
 
-        protected Scan CreateScanNode(string Url, string Parent, string Host, int DepthLevel)
+        protected Scan? CreateScanNode(string Url, string Parent, string Host, int DepthLevel)
         {
-            Scan scan = new();
+            Scan? scan = new();
             HttpResponse response = Task.Run(() => { return DownloadSourceCodeSync(Url); }).Result;
             HtmlDocument? document = CreateHtmlDocument(response.SourceCode);
             if (document != null)
@@ -69,56 +66,101 @@ namespace WebCrawler.Crawler
                 scan.ParentUrl = Parent;
                 scan.Host = Host;
                 scan.Title = document.DocumentNode.SelectSingleNode("/html/head/title")?.InnerText == null ? string.Empty : document.DocumentNode.SelectSingleNode("/html/head/title").InnerText;
-                scan.CompressedInnerText = document.DocumentNode.SelectSingleNode("/html")?.InnerText == null ? string.Empty : Encoding.Default.GetString(document.DocumentNode.SelectSingleNode("/html").InnerText.Zip());
-                scan.CompressedSourceCode = document.DocumentNode.SelectSingleNode("/html")?.InnerHtml == null ? string.Empty : Encoding.Default.GetString(document.DocumentNode.SelectSingleNode("/html").InnerHtml.Zip());
+                scan.CompressedInnerText = document.DocumentNode.SelectSingleNode("/html")?.InnerText == null ? string.Empty.Zip() : document.DocumentNode.SelectSingleNode("/html").InnerText.Zip();
+                scan.CompressedSourceCode = document.DocumentNode.SelectSingleNode("/html")?.InnerHtml == null ? string.Empty.Zip() : document.DocumentNode.SelectSingleNode("/html").InnerHtml.Zip();
                 scan.DepthLevel = DepthLevel;
                 scan.FetchTimeMS = response.FetchTimeMS;
+                return scan;
             }
-            return scan;
+            return null;
         }
         protected bool DoesExistInQueue(string Url)
         {
-            using(CrawlerContext context = new())
+            using (CrawlerContext context = new())
             {
-                return context.Queue.ToHashSet().Select(p => p.Url).Contains(Url);
+                return context.Queue.Where(p => p.Url == Url).FirstOrDefault() != null;
             }
         }
         protected bool DoesExistInScan(string Url)
         {
             using (CrawlerContext context = new())
             {
-                return context.Scan.ToHashSet().Select(p => p.UrlHash).Contains(Url.EncryptSHA256());
+                return context.Scan.Where(p => p.UrlHash == Url.EncryptSHA256()).FirstOrDefault() != null;
             }
         }
-
-        protected void Dequeue(Queue item)
+        protected Queue? Dequeue(string Host)
         {
+            Queue? queue;
             using (CrawlerContext context = new())
             {
-                context.Queue.Remove(item);
-                context.SaveChanges();
-            }
-        }
-        protected void Dequeue(string Url)
-        {
-            using (CrawlerContext context = new())
-            {
-                var vrTemp = context.Queue.Find(Url);
-                if(vrTemp != null)
+                using (IDbContextTransaction transaction = context.Database.BeginTransaction())
                 {
-                    context.Queue.Remove(vrTemp);
-                    context.SaveChanges();
+                    try
+                    {
+                        queue = context.Queue.Where(p => p.Host == Host).OrderBy(p => p.ID).FirstOrDefault();
+                        if (queue != null)
+                        {
+                            if (DoesExistInQueue(queue.Url))
+                            {
+                                context.Remove(queue);
+                                context.SaveChanges();
+                                transaction.Commit();
+                                return queue;
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+                    }
                 }
             }
+            return null;
         }
-
         protected void Enqueue(Queue item)
         {
             using (CrawlerContext context = new())
             {
-                context.Queue.Add(item);
-                context.SaveChanges();
+                using (IDbContextTransaction transaction = context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        if (!DoesExistInQueue(item.Url))
+                        {
+                            context.Queue.Add(item);
+                            context.SaveChanges();
+                            transaction.Commit();
+                        }
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+                    }
+                }
             }
         }
+        protected void Enqueue(string ParentUrl, string Url, string Host)
+        {
+            using (CrawlerContext context = new())
+            {
+                using (IDbContextTransaction transaction = context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        if (!DoesExistInQueue(Url))
+                        {
+                            context.Queue.Add(new Queue() { ParentUrl = ParentUrl, Url = Url, Host = Host });
+                            context.SaveChanges();
+                            transaction.Commit();
+                        }
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+                    }
+                }
+            }
+        }
+
     }
 }
