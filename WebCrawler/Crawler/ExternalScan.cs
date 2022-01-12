@@ -118,5 +118,9 @@ namespace WebCrawler.Crawler
                 }
             }
         }
+        public override string ToString()
+        {
+            return "External Scan";
+        }
     }
 }

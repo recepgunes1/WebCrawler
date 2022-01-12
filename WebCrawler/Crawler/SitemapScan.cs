@@ -58,7 +58,6 @@ namespace WebCrawler.Crawler
                 }
             }
         }
-
         public void Scanner()
         {
             InitializeQueue();
@@ -102,6 +101,10 @@ namespace WebCrawler.Crawler
                 }
             }
 
+        }
+        public override string ToString()
+        {
+            return "Sitemap or RSS Scanning";
         }
     }
 }

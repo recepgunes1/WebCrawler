@@ -116,5 +116,10 @@ namespace WebCrawler.Crawler
                 }
             }
         }
+        public override string ToString()
+        {
+            return "Internal Scan";
+        }
+
     }
 }

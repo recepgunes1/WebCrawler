@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows;
+using WebCrawler.Classes;
+using WebCrawler.Other;
 
 namespace WebCrawler
 {
@@ -12,6 +14,7 @@ namespace WebCrawler
     /// </summary>
     public partial class MainWindow : Window
     {
+        private int irIndex { get; set; }
         public MainWindow()
         {
             InitializeComponent();
@@ -40,26 +43,34 @@ namespace WebCrawler
 
         private void btnStart_Click(object sender, RoutedEventArgs e)
         {
-            string[] arrUrls = txtbxRootUrls.Text.Split(';');
-            foreach (var vrUrl in arrUrls)
+            IEnumerable<string> Urls = txtbxRootUrls.Text.Split(';').Where(p => p.IsValidUrl());
+            SetScanTypeIndex();
+            foreach (var vrUrl in Urls)
             {
-
-                Thread thread = new(() =>
-                {
-                    WindowStarter(vrUrl, Convert.ToInt32(nmrcAmountOfThreads.Value));
-                });
-                thread.SetApartmentState(ApartmentState.STA);
-                thread.IsBackground = true;
-                thread.Start();
+                WindowStarter(vrUrl, Convert.ToInt32(nmrcAmountOfThreads.Value), this.irIndex);
             }
         }
 
-        private void WindowStarter(string Url, int Amount)
+        private void WindowStarter(string Url, int Amount, int Type)
         {
-            ScanWindow window = new(Url, Amount);
-            window.Show();
-            System.Windows.Threading.Dispatcher.Run();
-
+            Thread thread = new(() =>
+            {
+                ScanWindow window = new(Url, Amount, Type);
+                window.Show();
+                System.Windows.Threading.Dispatcher.Run();
+            });
+            thread.SetApartmentState(ApartmentState.STA);
+            thread.IsBackground = true;
+            thread.Start();
+        }
+        private void SetScanTypeIndex()
+        {
+            if (rdbtnInternalScan.IsChecked == true)
+                this.irIndex = 0;
+            else if (rdbtnExternalScan.IsChecked == true)
+                this.irIndex = 1;
+            else if (rdbtnRSSorSitemap.IsChecked == true)
+                this.irIndex = 2;
         }
     }
 }

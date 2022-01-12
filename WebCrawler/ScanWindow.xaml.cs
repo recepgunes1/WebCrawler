@@ -17,15 +17,17 @@ namespace WebCrawler
     {
         private string Url { get; init; }
         private int irThreadAmount { get; init; }
-        private SitemapScan scan { get; init; }
+        private IScanner Scan { get; set; }
+        private ScanType TypeOfScan { get; init; }
         private DispatcherTimer dispatcherTimer { get; init; }
 
-        public ScanWindow(string _Url, int _irThreadAmount)
+        public ScanWindow(string _Url, int _irThreadAmount, int Type)
         {
             InitializeComponent();
-            Url = _Url;
-            irThreadAmount = _irThreadAmount;
-            scan = new(Url, this.irThreadAmount);
+            this.Url = _Url;
+            this.irThreadAmount = _irThreadAmount;
+            this.TypeOfScan = (ScanType)Type;
+            InitializeScan();
             dispatcherTimer = new DispatcherTimer();
             dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 1);
             dispatcherTimer.Tick += new EventHandler(UpdateTaskManager);
@@ -34,12 +36,12 @@ namespace WebCrawler
 
         private void wndwScan_Loaded(object sender, RoutedEventArgs e)
         {
-            this.Title = $"{Url} is scanning...";
+            this.Title = $"{Url} is scanning... | {Scan}";
             dispatcherTimer.Start();
-            Task.Factory.StartNew(() =>
-            {
-                scan.Scanner();
-            });
+            //Task.Factory.StartNew(() =>
+            //{
+            //    Scan.Scanner();
+            //});
 
         }
 
@@ -48,14 +50,14 @@ namespace WebCrawler
             Dispatcher.BeginInvoke((Action)(() =>
             {
                 List<StatusOfTask> statuses = new();
-                if (scan.ListOfTasks != null)
+                if (Scan.ListOfTasks != null)
                 {
                     for (int i = 0; i < 8; i++)
                     {
                         StatusOfTask status = new()
                         {
                             Status = ((TaskStatus)i).ToString(),
-                            Amount = scan.ListOfTasks.Count(p => p.Status == (TaskStatus)i)
+                            Amount = Scan.ListOfTasks.Count(p => p.Status == (TaskStatus)i)
                         };
                         statuses.Add(status);
                     }
@@ -71,11 +73,26 @@ namespace WebCrawler
             {
                 using (CrawlerContext crawler = new())
                 {
-                    dtgrdScanResult.ItemsSource = crawler.Scan.Where(p => p.Host == scan.Host).OrderByDescending(p => p.DiscoveryDate).ToList();
+                    dtgrdScanResult.ItemsSource = crawler.Scan.Where(p => p.Host == Scan.Host).OrderByDescending(p => p.DiscoveryDate).ToList();
                 }
             }));
             GC.Collect();
         }
 
+        private void InitializeScan()
+        {
+            switch (this.TypeOfScan)
+            {
+                case 0:
+                    Scan = new InternalScan(this.Url, this.irThreadAmount);
+                    break;
+                case (ScanType)1:
+                    Scan = new ExternalScan(this.Url, this.irThreadAmount);
+                    break;
+                case (ScanType)2:
+                    Scan = new SitemapScan(this.Url, this.irThreadAmount);
+                    break;
+            }
+        }
     }
 }
