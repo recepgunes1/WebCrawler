@@ -1,117 +1,120 @@
-﻿namespace WebCrawler.Crawler
+﻿using DBEntity.Context;
+using DBEntity.Models;
+using Microsoft.EntityFrameworkCore.Storage;
+using System;
+using System.Collections.Concurrent;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using WebCrawler.Classes;
+using WebCrawler.Other;
+
+namespace WebCrawler.Crawler
 {
-    internal class InternalScan : CommonMethods//, ICrawler
+    internal class InternalScan : CommonMethods, IScanner
     {
-        //public string MainUrl { get; init; }
-        //public string Host { get; init; }
-        //public bool RecursionFlag { get; set; }
-        //public int DepthLevel { get; set; }
-        //public int AmountOfMaxTasks { get; init; }
-
-        //public InternalScan(string Url)
-        //{
-        //    MainUrl = Url;
-        //    Host = new Uri(Url).Host;
-        //    RecursionFlag = false;
-        //    DepthLevel = 1;
-        //}
-
-        //public void GetUrlsFromSourceCodeToQueue(string SourceCode, string ParentUrl)
-        //{
-        //    var vrDocument = CreateHtmlDocument(SourceCode);
-        //    if(vrDocument != null)
-        //    {
-        //        var vrSelectedNodes = vrDocument.DocumentNode.SelectNodes("//a");
-        //        if (vrSelectedNodes != null)
-        //        {
-        //        }
-        //    }
-        //}
-
-        //public void InitializeQueue()
-        //{
-        //    HttpResponse response = Task.Run(() => { return DownloadSourceCodeSync(this.MainUrl); }).Result;
-        //    var vrUrls = GetUrlsFromSourceCode(response.SourceCode, this.MainUrl);
-        //    if(vrUrls != null)
-        //    {
-        //        foreach(var vrUrl in vrUrls)
-        //        {
-        //            if(UrlOperations.DoTheyHaveSameHost(vrUrl, this.Host))
-        //            {
-        //                if (!DoesExistInQueue(vrUrl))
-        //                {
-        //                    var vrQueue = new Queue() { Url = vrUrl, Host = this.Host };
-        //                    Enqueue(vrQueue);
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
-
-        //public void InitializeQueue(IEnumerable<string> Param)
-        //{
-        //    if (Param != null)
-        //    {
-        //        foreach (var vrUrl in Param)
-        //        {
-        //            if (UrlOperations.DoTheyHaveSameHost(vrUrl, this.Host))
-        //            {
-        //                if (!DoesExistInQueue(vrUrl))
-        //                {
-        //                    var vrQueue = new Queue() { Url = vrUrl, Host = this.Host };
-        //                    Enqueue(vrQueue);
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
-
-        //public void Scanner()
-        //{
-        //    if (RecursionFlag)
-        //    {
-        //        using (CrawlerContext context = new())
-        //        {
-        //            var vrUrls = context.Scan.ToList().Where(p => p.DoTheyHaveSameHost(this.Host)).Select(p => p.Url).Distinct();
-        //            var vrParentUrls = context.Scan.ToList().Where(p => p.DoTheyHaveSameHost(this.Host)).Select(p => p.ParentUrl).Distinct();
-        //            var vrSubParentUrls = vrUrls.Where(p => !vrParentUrls.Contains(p));
-        //            InitializeQueue(vrSubParentUrls);
-        //        }
-        //    }
-        //    else
-        //    {
-        //        InitializeQueue();
-        //    }
-        //    var Queue = new CrawlerContext().Queue.Where(p => p.DoTheyHaveSameHost(this.Host)).Select(p => p.Url);
-        //    if (Queue.Count() == 0 || Queue == null)
-        //        return;
-        //    foreach (var ParentUrl in Queue)
-        //    {
-        //        Dequeue(ParentUrl);
-        //        var vrResponse = Task.Run(() => { return DownloadSourceCodeSync(ParentUrl); }).Result;
-        //        GetUrlsFromSourceCode(vrResponse.SourceCode, ParentUrl);
-        //        if(vrSubUrls != null)
-        //        {
-        //            foreach (var vrSubUrl in vrSubUrls)
-        //            {
-        //                if (!DoesExistInScan(vrSubUrl))
-        //                {
-        //                    var vrNode = CreateScanNode(vrSubUrl, ParentUrl, this.Host, this.DepthLevel);
-        //                    if (vrNode != null)
-        //                    {
-        //                        using (CrawlerContext context = new())
-        //                        {
-        //                            context.Scan.Add(vrNode);
-        //                            context.SaveChanges();
-        //                        }
-        //                    }
-        //                }
-        //            }
-        //        }
-        //    }
-        //    this.DepthLevel++;
-        //    this.RecursionFlag = true;
-        //    Scanner();
-        //}
+        private string MainUrl { get; init; }
+        public string Host { get; init; }
+        private int AmountOfMaxTasks { get; init; }
+        private ConcurrentQueue<Task> QueueOfTasks { get; init; }
+        private ConcurrentQueue<string> WaitingToScan { get; set; }
+        public ConcurrentBag<Task> ListOfTasks { get; init; }
+        public InternalScan(string Url, int AmountOfTasks)
+        {
+            MainUrl = Url;
+            AmountOfMaxTasks = AmountOfTasks;
+            Host = new Uri(Url).Host;
+            QueueOfTasks = new();
+            ListOfTasks = new();
+            WaitingToScan = new();
+        }
+        private void GetUrlsFromSourceCodeToQueue(string SourceCode, string ParentUrl)
+        {
+            var vrDocument = CreateHtmlDocument(SourceCode);
+            if (vrDocument != null)
+            {
+                var vrSelectedNodes = vrDocument.DocumentNode.SelectNodes("//a");
+                if (vrSelectedNodes != null)
+                {
+                    var vrFiltredUrls = vrSelectedNodes
+                        .Where(p => p != null)
+                        .Select(p => p.Attributes["href"]?.Value)
+                        .Where(p => !string.IsNullOrEmpty(p))
+                        .Select(p => p.StartsWith(Path.AltDirectorySeparatorChar) && !p.StartsWith($"{Path.AltDirectorySeparatorChar}{Path.AltDirectorySeparatorChar}") ? $"{ParentUrl}{p}" : p)
+                        .Select(p => p.EndsWith(Path.AltDirectorySeparatorChar) ? p.Remove(p.Length - 1) : p)
+                        .Where(p => p.IsValidUrl())
+                        .Where(p => UrlOperations.DoTheyHaveSameHost(p, this.Host))
+                        .Distinct();
+                    foreach (var vrUrl in vrFiltredUrls)
+                    {
+                        if (vrUrl != null)
+                        {
+                            if (!DoesExistInQueue(vrUrl) && !DoesExistInScan(vrUrl))
+                            {
+                                Enqueue(new Queue() { Url = vrUrl, Host = this.Host });
+                                System.Diagnostics.Debug.Print($"{vrUrl} was added queue table.");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        private void InitializeQueue()
+        {
+            HttpResponse response = Task.Run(() => { return DownloadSourceCodeSync(this.MainUrl); }).Result;
+            GetUrlsFromSourceCodeToQueue(response.SourceCode, this.MainUrl);
+            var vrQueue = new CrawlerContext().Queue.Where(p => p.Host == this.Host).ToList();
+            if (vrQueue != null)
+            {
+                foreach (var vrNode in vrQueue)
+                {
+                    WaitingToScan.Enqueue(vrNode.Url);
+                    System.Diagnostics.Debug.Print($"{vrNode.Url} was added queue on ram.");
+                }
+            }
+        }
+        public void Scanner()
+        {
+            InitializeQueue();
+            foreach (var vrItem in WaitingToScan)
+            {
+                Task task = new(() =>
+                {
+                    System.Diagnostics.Debug.Print($"Scan was started for {vrItem}.");
+                    var vrNode = CreateScanNode(vrItem, this.MainUrl, this.Host);
+                    if (vrNode != null)
+                    {
+                        using (CrawlerContext context = new())
+                        {
+                            using (IDbContextTransaction transaction = context.Database.BeginTransaction())
+                            {
+                                try
+                                {
+                                    if (!DoesExistInScan(vrNode.Url))
+                                    {
+                                        context.Scan.Add(vrNode);
+                                        context.SaveChanges();
+                                        transaction.Commit();
+                                    }
+                                    Dequeue(vrNode.Url);
+                                }
+                                catch
+                                {
+                                    transaction.Rollback();
+                                }
+                            }
+                        }
+                    }
+                    TaskFinished(QueueOfTasks);
+                    System.Diagnostics.Debug.Print($"Scan was done for {vrItem}.");
+                });
+                QueueOfTasks.Enqueue(task);
+                ListOfTasks.Add(task);
+                for (int i = 0; i < GetMissingTaskAmount(this.ListOfTasks, this.AmountOfMaxTasks); i++)
+                {
+                    TaskFinished(QueueOfTasks);
+                }
+            }
+        }
     }
 }

@@ -17,7 +17,7 @@ namespace WebCrawler
     {
         private string Url { get; init; }
         private int irThreadAmount { get; init; }
-        private ExternalScan scan { get; init; }
+        private SitemapScan scan { get; init; }
         private DispatcherTimer dispatcherTimer { get; init; }
 
         public ScanWindow(string _Url, int _irThreadAmount)
@@ -62,6 +62,7 @@ namespace WebCrawler
                 }
                 dtgrdStatusOfTasks.ItemsSource = statuses;
             }));
+            GC.Collect();
         }
 
         private void UpdateScanResult(object sender, EventArgs e)
@@ -73,6 +74,7 @@ namespace WebCrawler
                     dtgrdScanResult.ItemsSource = crawler.Scan.Where(p => p.Host == scan.Host).OrderByDescending(p => p.DiscoveryDate).ToList();
                 }
             }));
+            GC.Collect();
         }
 
     }

@@ -16,7 +16,6 @@
         </Grid.RowDefinitions>
         <DataGrid x:Name="dtgrdScanResult" Grid.Row="0" Grid.Column="0" Margin="14" IsReadOnly="True" AutoGenerateColumns="False" AlternatingRowBackground="#FFE5E5E5">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Parent Url" Binding="{Binding Path=UrlHash}"/>
                 <DataGridTextColumn Header="Url" Binding="{Binding Path=Url}"/>
                 <DataGridTextColumn Header="Title" Binding="{Binding Path=Title}"/>
                 <DataGridTextColumn Header="Elapsed Time (MS)" Binding="{Binding Path=FetchTimeMS}"/>

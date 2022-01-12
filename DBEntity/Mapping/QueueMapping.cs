@@ -14,12 +14,11 @@ namespace DBEntity.Mapping
 
             //Not Null
             builder.Property(p => p.ID).IsRequired();
-            builder.Property(p => p.ParentUrl).IsRequired();
             builder.Property(p => p.Url).IsRequired();
             builder.Property(p => p.Host).IsRequired();
 
             //Table Settings
-            builder.ToTable("tblQueue");
+            builder.ToTable("QueueOfWaitingUrls");
         }
     }
 }

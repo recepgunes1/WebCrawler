@@ -18,7 +18,6 @@ namespace DBEntity.Mapping
             builder.Property(p => p.Url).IsRequired();
             builder.Property(p => p.Host).IsRequired();
             builder.Property(p => p.DiscoveryDate).IsRequired();
-            builder.Property(p => p.DepthLevel).IsRequired();
             builder.Property(p => p.FetchTimeMS).IsRequired();
 
             //Can be Null
@@ -34,7 +33,7 @@ namespace DBEntity.Mapping
             builder.Property(p => p.UrlHash).HasMaxLength(64);
 
             //Table Settings
-            builder.ToTable("tblScan");
+            builder.ToTable("ResultOfScan");
         }
     }
 }

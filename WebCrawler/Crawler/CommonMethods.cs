@@ -2,6 +2,7 @@
 using DBEntity.Models;
 using HtmlAgilityPack;
 using Microsoft.EntityFrameworkCore.Storage;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -43,6 +44,7 @@ namespace WebCrawler.Crawler
             httpResponse.FetchTimeMS = stopwatch.ElapsedMilliseconds;
             return httpResponse;
         }
+
         protected HtmlDocument? CreateHtmlDocument(string SourceCode)
         {
             HtmlDocument document = new HtmlDocument();
@@ -54,7 +56,7 @@ namespace WebCrawler.Crawler
             return null;
         }
 
-        protected Scan? CreateScanNode(string Url, string Parent, string Host, int DepthLevel)
+        protected Scan? CreateScanNode(string Url, string Parent, string Host)
         {
             Scan? scan = new();
             HttpResponse response = Task.Run(() => { return DownloadSourceCodeSync(Url); }).Result;
@@ -68,12 +70,12 @@ namespace WebCrawler.Crawler
                 scan.Title = document.DocumentNode.SelectSingleNode("/html/head/title")?.InnerText == null ? string.Empty : document.DocumentNode.SelectSingleNode("/html/head/title").InnerText;
                 scan.CompressedInnerText = document.DocumentNode.SelectSingleNode("/html")?.InnerText == null ? string.Empty.Zip() : document.DocumentNode.SelectSingleNode("/html").InnerText.Zip();
                 scan.CompressedSourceCode = document.DocumentNode.SelectSingleNode("/html")?.InnerHtml == null ? string.Empty.Zip() : document.DocumentNode.SelectSingleNode("/html").InnerHtml.Zip();
-                scan.DepthLevel = DepthLevel;
                 scan.FetchTimeMS = response.FetchTimeMS;
                 return scan;
             }
             return null;
         }
+
         protected bool DoesExistInQueue(string Url)
         {
             using (CrawlerContext context = new())
@@ -81,6 +83,7 @@ namespace WebCrawler.Crawler
                 return context.Queue.Where(p => p.Url == Url).FirstOrDefault() != null;
             }
         }
+
         protected bool DoesExistInScan(string Url)
         {
             using (CrawlerContext context = new())
@@ -88,16 +91,16 @@ namespace WebCrawler.Crawler
                 return context.Scan.Where(p => p.UrlHash == Url.EncryptSHA256()).FirstOrDefault() != null;
             }
         }
-        protected Queue? Dequeue(string Host)
+
+        protected void Dequeue(string Url)
         {
-            Queue? queue;
             using (CrawlerContext context = new())
             {
                 using (IDbContextTransaction transaction = context.Database.BeginTransaction())
                 {
                     try
                     {
-                        queue = context.Queue.Where(p => p.Host == Host).OrderBy(p => p.ID).FirstOrDefault();
+                        var queue = context.Queue.Where(p => p.Url == Url).FirstOrDefault();
                         if (queue != null)
                         {
                             if (DoesExistInQueue(queue.Url))
@@ -105,7 +108,6 @@ namespace WebCrawler.Crawler
                                 context.Remove(queue);
                                 context.SaveChanges();
                                 transaction.Commit();
-                                return queue;
                             }
                         }
                     }
@@ -115,8 +117,8 @@ namespace WebCrawler.Crawler
                     }
                 }
             }
-            return null;
         }
+
         protected void Enqueue(Queue item)
         {
             using (CrawlerContext context = new())
@@ -139,26 +141,20 @@ namespace WebCrawler.Crawler
                 }
             }
         }
-        protected void Enqueue(string ParentUrl, string Url, string Host)
+
+        protected int GetMissingTaskAmount(ConcurrentBag<Task> tasks, int AmoutOfTasks)
         {
-            using (CrawlerContext context = new())
+            var vrCount = tasks.Count(p => p.Status == TaskStatus.Running);
+            if (AmoutOfTasks > vrCount)
+                return AmoutOfTasks - vrCount;
+            return 0;
+        }
+
+        protected void TaskFinished(ConcurrentQueue<Task> Tasks)
+        {
+            if (Tasks.TryDequeue(out var vrTempTask) && vrTempTask != null)
             {
-                using (IDbContextTransaction transaction = context.Database.BeginTransaction())
-                {
-                    try
-                    {
-                        if (!DoesExistInQueue(Url))
-                        {
-                            context.Queue.Add(new Queue() { ParentUrl = ParentUrl, Url = Url, Host = Host });
-                            context.SaveChanges();
-                            transaction.Commit();
-                        }
-                    }
-                    catch
-                    {
-                        transaction.Rollback();
-                    }
-                }
+                vrTempTask.Start();
             }
         }
 

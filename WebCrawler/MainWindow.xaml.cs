@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Windows;
 
 namespace WebCrawler
@@ -42,10 +43,23 @@ namespace WebCrawler
             string[] arrUrls = txtbxRootUrls.Text.Split(';');
             foreach (var vrUrl in arrUrls)
             {
-                ScanWindow window = new(vrUrl, Convert.ToInt32(nmrcAmountOfThreads.Value));
-                window.Show();
-                System.Windows.Threading.Dispatcher.Run();
+
+                Thread thread = new(() =>
+                {
+                    WindowStarter(vrUrl, Convert.ToInt32(nmrcAmountOfThreads.Value));
+                });
+                thread.SetApartmentState(ApartmentState.STA);
+                thread.IsBackground = true;
+                thread.Start();
             }
+        }
+
+        private void WindowStarter(string Url, int Amount)
+        {
+            ScanWindow window = new(Url, Amount);
+            window.Show();
+            System.Windows.Threading.Dispatcher.Run();
+
         }
     }
 }
