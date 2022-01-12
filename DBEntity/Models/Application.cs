@@ -4,9 +4,8 @@
     {
 #pragma warning disable CS8618
         public int ID { get; set; }
-        public byte[] Backup { get; set; }
-        public DateTime CreatecreationDate { get; set; }
-        public string Explanation { get; set; }
+        public string Backup { get; set; }
+        public DateTime CreationDate { get; set; }
 
     }
 }

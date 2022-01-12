@@ -44,11 +44,45 @@ namespace WebCrawler
         private void btnStart_Click(object sender, RoutedEventArgs e)
         {
             IEnumerable<string> Urls = txtbxRootUrls.Text.Split(';').Where(p => p.IsValidUrl());
-            SetScanTypeIndex();
             foreach (var vrUrl in Urls)
             {
                 WindowStarter(vrUrl, Convert.ToInt32(nmrcAmountOfThreads.Value), this.irIndex);
             }
+        }
+
+        private void miExitWithBackup_Click(object sender, RoutedEventArgs e)
+        {
+            Backup backup = new() { InputData = txtbxRootUrls.Text, SelectedScanType = irIndex, AmountOfTasks = (int)nmrcAmountOfThreads.Value };
+            BackupOperation operation = new();
+            operation.SaveIt(backup);
+            System.Environment.Exit(1);
+        }
+
+        private void miExitWithoutBackup_Click(object sender, RoutedEventArgs e)
+        {
+            System.Environment.Exit(1);
+        }
+
+        private void miLoadLastBackup_Click(object sender, RoutedEventArgs e)
+        {
+            BackupOperation operation = new();
+            Backup? backup = operation.GetBackup();
+            if (backup != null)
+            {
+                this.txtbxRootUrls.Text = backup.InputData;
+                this.irIndex = backup.SelectedScanType;
+                this.nmrcAmountOfThreads.Value = backup.AmountOfTasks;
+                SetRadioButton();
+            }
+        }
+        private void SetScanTypeIndex(object sender, RoutedEventArgs e)
+        {
+            if (rdbtnInternalScan.IsChecked == true)
+                this.irIndex = 0;
+            else if (rdbtnExternalScan.IsChecked == true)
+                this.irIndex = 1;
+            else if (rdbtnRSSorSitemap.IsChecked == true)
+                this.irIndex = 2;
         }
 
         private void WindowStarter(string Url, int Amount, int Type)
@@ -63,14 +97,21 @@ namespace WebCrawler
             thread.IsBackground = true;
             thread.Start();
         }
-        private void SetScanTypeIndex()
+
+        private void SetRadioButton()
         {
-            if (rdbtnInternalScan.IsChecked == true)
-                this.irIndex = 0;
-            else if (rdbtnExternalScan.IsChecked == true)
-                this.irIndex = 1;
-            else if (rdbtnRSSorSitemap.IsChecked == true)
-                this.irIndex = 2;
+            switch (this.irIndex)
+            {
+                case 0:
+                    rdbtnInternalScan.IsChecked = true;
+                    break;
+                case 1:
+                    rdbtnExternalScan.IsChecked = true;
+                    break;
+                case 2:
+                    rdbtnRSSorSitemap.IsChecked = true;
+                    break;
+            }
         }
     }
 }

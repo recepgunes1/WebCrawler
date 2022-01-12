@@ -11,21 +11,17 @@ namespace DBEntity.Mapping
             //Not Null
             builder.Property(p => p.ID).IsRequired();
             builder.Property(p => p.Backup).IsRequired();
-            builder.Property(p => p.CreatecreationDate).IsRequired();
-            builder.Property(p => p.Explanation).IsRequired();
+            builder.Property(p => p.CreationDate).IsRequired();
 
             //Default Value
-            builder.Property(p => p.CreatecreationDate).ValueGeneratedOnAdd();
-            builder.Property(p => p.CreatecreationDate).HasDefaultValueSql("GETDATE()");
-
-            //Max Length
-            builder.Property(p => p.Explanation).HasMaxLength(1024);
+            builder.Property(p => p.CreationDate).ValueGeneratedOnAdd();
+            builder.Property(p => p.CreationDate).HasDefaultValueSql("GETDATE()");
 
             //Primary Key
             builder.HasKey(p => p.ID);
 
             //Table Settings
-            builder.ToTable("tblApplication");
+            builder.ToTable("ApplicationBackup");
         }
     }
 }

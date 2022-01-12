@@ -25,9 +25,9 @@
         </Grid.ColumnDefinitions>
         <Menu Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="6">
             <MenuItem Header="Application">
-                <MenuItem Header="Exit with backup"/>
-                <MenuItem Header="Exit without backup"/>
-                <MenuItem Header="Load backup"/>
+                <MenuItem x:Name="miExitWithBackup" Header="Exit with backup" Click="miExitWithBackup_Click"/>
+                <MenuItem x:Name="miExitWithoutBackup" Header="Exit without backup" Click="miExitWithoutBackup_Click"/>
+                <MenuItem x:Name="miLoadLastBackup" Header="Load last backup" Click="miLoadLastBackup_Click"/>
             </MenuItem>
             <MenuItem Header="Information">
                 <MenuItem Header="About Me"/>
@@ -47,9 +47,9 @@
         </Button>
         <GroupBox Header="Scan Type" Grid.Row="2" Grid.Column="0" Grid.RowSpan="3" Grid.ColumnSpan="3" Margin="14">
             <StackPanel Orientation="Vertical">
-                <RadioButton x:Name="rdbtnInternalScan" Content="Internal Scan" Margin="14" IsChecked="True"/>
-                <RadioButton x:Name="rdbtnExternalScan" Content="External Scan" Margin="14"/>
-                <RadioButton x:Name="rdbtnRSSorSitemap" Content="Scan only RSS or Sitemap.xml(If Exists)" Margin="14"/>
+                <RadioButton x:Name="rdbtnInternalScan" Content="Internal Scan" Margin="14" IsChecked="True" Checked="SetScanTypeIndex"/>
+                <RadioButton x:Name="rdbtnExternalScan" Content="External Scan" Margin="14" Checked="SetScanTypeIndex"/>
+                <RadioButton x:Name="rdbtnRSSorSitemap" Content="Scan only RSS or Sitemap.xml(If Exists)" Margin="14" Checked="SetScanTypeIndex"/>
             </StackPanel>
         </GroupBox>
         <GroupBox Header="Amount Of Max. Threads" Grid.Row="2" Grid.Column="3" Grid.RowSpan="3" Grid.ColumnSpan="3" Margin="14">
