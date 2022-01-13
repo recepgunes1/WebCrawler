@@ -12,6 +12,7 @@ namespace WebCrawler
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    // 2021112210
     public partial class MainWindow : Window
     {
         private int irIndex { get; set; }
@@ -20,7 +21,7 @@ namespace WebCrawler
             InitializeComponent();
         }
 
-        private void wndwMain_PreviewDrop(object sender, DragEventArgs e)
+        private void wndwMain_PreviewDrop(object sender, DragEventArgs e) //2021112242
         {
             var vrTemp = (string[]?)e.Data.GetData(DataFormats.FileDrop);
             if (vrTemp != null)
@@ -41,7 +42,7 @@ namespace WebCrawler
             }
         }
 
-        private void btnStart_Click(object sender, RoutedEventArgs e)
+        private void btnStart_Click(object sender, RoutedEventArgs e) //2021112242
         {
             IEnumerable<string> Urls = txtbxRootUrls.Text.Split(';').Where(p => p.IsValidUrl());
             foreach (var vrUrl in Urls)
@@ -50,7 +51,7 @@ namespace WebCrawler
             }
         }
 
-        private void miExitWithBackup_Click(object sender, RoutedEventArgs e)
+        private void miExitWithBackup_Click(object sender, RoutedEventArgs e) //2021112242
         {
             Backup backup = new() { InputData = txtbxRootUrls.Text, SelectedScanType = irIndex, AmountOfTasks = (int)nmrcAmountOfThreads.Value };
             BackupOperation operation = new();
@@ -58,24 +59,24 @@ namespace WebCrawler
             System.Environment.Exit(1);
         }
 
-        private void miExitWithoutBackup_Click(object sender, RoutedEventArgs e)
+        private void miExitWithoutBackup_Click(object sender, RoutedEventArgs e) //2021112242
         {
             System.Environment.Exit(1);
         }
 
-        private void miLoadLastBackup_Click(object sender, RoutedEventArgs e)
+        private void miLoadLastBackup_Click(object sender, RoutedEventArgs e) //2021112242
         {
             BackupOperation operation = new();
             Backup? backup = operation.GetBackup();
             if (backup != null)
             {
-                this.txtbxRootUrls.Text = backup.InputData;
+                this.txtbxRootUrls.Text = backup.InputData; //2021112212
                 this.irIndex = backup.SelectedScanType;
                 this.nmrcAmountOfThreads.Value = backup.AmountOfTasks;
                 SetRadioButton();
             }
         }
-        private void SetScanTypeIndex(object sender, RoutedEventArgs e)
+        private void SetScanTypeIndex(object sender, RoutedEventArgs e) //2021112242
         {
             if (rdbtnInternalScan.IsChecked == true)
                 this.irIndex = 0;

@@ -5,8 +5,9 @@ namespace WebCrawler.Crawler
 {
     internal interface IScanner
     {
-        ConcurrentBag<Task> ListOfTasks { get; init; }
-        string Host { get; init;}
+        //2021112201
+        ConcurrentBag<Task> ListOfTasks { get; init; } //2021112228
+        string Host { get; init; }
         void Scanner();
     }
 }

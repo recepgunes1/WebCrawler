@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DBEntity.Mapping
 {
+    //2021112210
     public class ApplicationMapping : IEntityTypeConfiguration<Application>
     {
         public void Configure(EntityTypeBuilder<Application> builder)

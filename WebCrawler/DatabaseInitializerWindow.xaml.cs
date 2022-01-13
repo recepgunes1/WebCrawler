@@ -1,4 +1,4 @@
-﻿using DBEntity.Context;
+﻿using DBEntity.Context; //2021112204
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -9,6 +9,7 @@ namespace WebCrawler
     /// <summary>
     /// Interaction logic for DatabaseInitializerWindow.xaml
     /// </summary>
+    // 2021112210
     public partial class DatabaseInitializerWindow : Window
     {
         public DatabaseInitializerWindow()
@@ -16,7 +17,7 @@ namespace WebCrawler
             InitializeComponent();
         }
 
-        private void btnInit_Click(object sender, RoutedEventArgs e)
+        private void btnInit_Click(object sender, RoutedEventArgs e) //2021112242
         {
             RegistryOperations registry = new();
             int irDatabaseProvider = cmbDatabaseProvider.SelectedIndex;
@@ -46,9 +47,9 @@ namespace WebCrawler
             }
             registry.SaveRegistry(DatabaseProvider, ConnectionString);
             CrawlerContext context = new();
-            this.Close();
+            this.Close(); //2021112212
         }
-        private void wndwDatabaseInitializer_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void wndwDatabaseInitializer_Closing(object sender, System.ComponentModel.CancelEventArgs e) //2021112242
         {
             MainWindow window = new();
             window.Show();

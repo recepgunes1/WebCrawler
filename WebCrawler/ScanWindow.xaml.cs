@@ -1,4 +1,4 @@
-﻿using DBEntity.Context;
+﻿using DBEntity.Context; //2021112204
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,39 +13,41 @@ namespace WebCrawler
     /// <summary>
     /// Interaction logic for ScanWindow.xaml
     /// </summary>
+    // 2021112210
     public partial class ScanWindow : Window
     {
+        //2021112201
         private string Url { get; init; }
         private int irThreadAmount { get; init; }
         private IScanner Scan { get; set; }
-        private ScanType TypeOfScan { get; init; }
+        private ScanType TypeOfScan { get; init; } //2021112211
         private DispatcherTimer dispatcherTimer { get; init; }
 
         public ScanWindow(string _Url, int _irThreadAmount, int Type)
         {
             InitializeComponent();
-            this.Url = _Url;
+            this.Url = _Url; //2021112212
             this.irThreadAmount = _irThreadAmount;
             this.TypeOfScan = (ScanType)Type;
             InitializeScan();
-            dispatcherTimer = new DispatcherTimer();
-            dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 1);
+            dispatcherTimer = new DispatcherTimer(); //2021112241
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 1); //2021112240
             dispatcherTimer.Tick += new EventHandler(UpdateTaskManager);
             dispatcherTimer.Tick += new EventHandler(UpdateScanResult);
         }
 
-        private void wndwScan_Loaded(object sender, RoutedEventArgs e)
+        private void wndwScan_Loaded(object sender, RoutedEventArgs e) //2021112242
         {
             this.Title = $"{Url} is scanning... | {Scan}";
             dispatcherTimer.Start();
-            //Task.Factory.StartNew(() =>
-            //{
-            //    Scan.Scanner();
-            //});
+            Task.Factory.StartNew(() =>
+            {
+                Scan.Scanner();
+            });
 
         }
 
-        private void UpdateTaskManager(object sender, EventArgs e)
+        private void UpdateTaskManager(object sender, EventArgs e) //2021112242
         {
             Dispatcher.BeginInvoke((Action)(() =>
             {
@@ -67,13 +69,13 @@ namespace WebCrawler
             GC.Collect();
         }
 
-        private void UpdateScanResult(object sender, EventArgs e)
+        private void UpdateScanResult(object sender, EventArgs e) //2021112242
         {
             Dispatcher.BeginInvoke((Action)(() =>
             {
-                using (CrawlerContext crawler = new())
+                using (CrawlerContext crawler = new()) //2021112230
                 {
-                    dtgrdScanResult.ItemsSource = crawler.Scan.Where(p => p.Host == Scan.Host).OrderByDescending(p => p.DiscoveryDate).ToList();
+                    dtgrdScanResult.ItemsSource = crawler.Scan.Where(p => p.Host == Scan.Host).OrderByDescending(p => p.DiscoveryDate).ToList(); //2021112226 - 2021112250
                 }
             }));
             GC.Collect();

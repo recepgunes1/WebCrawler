@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DBEntity.Mapping
 {
+    //2021112210
     public class QueueMapping : IEntityTypeConfiguration<Queue>
     {
         public void Configure(EntityTypeBuilder<Queue> builder)

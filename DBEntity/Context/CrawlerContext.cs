@@ -5,15 +5,19 @@ using Microsoft.Win32;
 
 namespace DBEntity.Context
 {
+    //2021112210
     public class CrawlerContext : DbContext
     {
 #pragma warning disable CS8618
 #pragma warning disable CS8600
 #pragma warning disable CA1416
 #pragma warning disable CS8602
-        public DbSet<Application> Application { get; set; }
-        public DbSet<Queue> Queue { get; set; }
-        public DbSet<Scan> Scan { get; set; }
+
+        public DbSet<Application> Application { get; set; } //2021112201
+        public DbSet<Queue> Queue { get; set; } //2021112201
+        public DbSet<Scan> Scan { get; set; } //2021112201
+
+        //2021112202 - 2021112212
         public CrawlerContext() : base()
         {
             Database.SetCommandTimeout(int.MaxValue);
@@ -24,7 +28,7 @@ namespace DBEntity.Context
             RegistryKey registryKey = Registry.CurrentUser.OpenSubKey("WebCrawler");
             string DatabaseProiver = (string)registryKey.GetValue("Database Provider");
             string ConnectionString = (string)registryKey.GetValue("Connection String");
-            if (!string.IsNullOrEmpty(DatabaseProiver) && !string.IsNullOrEmpty(ConnectionString))
+            if (!string.IsNullOrEmpty(DatabaseProiver) && !string.IsNullOrEmpty(ConnectionString)) //2021112239
             {
                 switch (DatabaseProiver)
                 {

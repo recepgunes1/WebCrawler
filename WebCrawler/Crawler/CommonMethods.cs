@@ -1,4 +1,4 @@
-﻿using DBEntity.Context;
+﻿using DBEntity.Context; //2021112204
 using DBEntity.Models;
 using HtmlAgilityPack;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -17,14 +17,14 @@ namespace WebCrawler.Crawler
     {
         protected async Task<HttpResponse> DownloadSourceCodeSync(string Target)
         {
-            Stopwatch stopwatch = new();
+            Stopwatch stopwatch = new(); //2021112240
             HttpResponse httpResponse = new();
             stopwatch.Start();
-            try
+            try //2021112205
             {
-                using (HttpClient client = new())
+                using (HttpClient client = new()) //2021112230
                 {
-                    using (HttpResponseMessage response = await client.GetAsync(Target))
+                    using (HttpResponseMessage response = await client.GetAsync(Target)) //2021112229
                     {
                         using (Stream stream = await response.Content.ReadAsStreamAsync())
                         {
@@ -48,7 +48,7 @@ namespace WebCrawler.Crawler
         protected HtmlDocument? CreateHtmlDocument(string SourceCode)
         {
             HtmlDocument document = new HtmlDocument();
-            if (!string.IsNullOrEmpty(SourceCode))
+            if (!string.IsNullOrEmpty(SourceCode)) //2021112239
             {
                 document.LoadHtml(SourceCode);
                 return document;
@@ -67,7 +67,7 @@ namespace WebCrawler.Crawler
                 scan.Url = Url;
                 scan.ParentUrl = Parent;
                 scan.Host = Host;
-                scan.Title = document.DocumentNode.SelectSingleNode("/html/head/title")?.InnerText == null ? string.Empty : document.DocumentNode.SelectSingleNode("/html/head/title").InnerText;
+                scan.Title = document.DocumentNode.SelectSingleNode("/html/head/title")?.InnerText == null ? string.Empty : document.DocumentNode.SelectSingleNode("/html/head/title").InnerText; //2021112225
                 scan.CompressedInnerText = document.DocumentNode.SelectSingleNode("/html")?.InnerText == null ? string.Empty.Zip() : document.DocumentNode.SelectSingleNode("/html").InnerText.Zip();
                 scan.CompressedSourceCode = document.DocumentNode.SelectSingleNode("/html")?.InnerHtml == null ? string.Empty.Zip() : document.DocumentNode.SelectSingleNode("/html").InnerHtml.Zip();
                 scan.FetchTimeMS = response.FetchTimeMS;
@@ -78,29 +78,29 @@ namespace WebCrawler.Crawler
 
         protected bool DoesExistInQueue(string Url)
         {
-            using (CrawlerContext context = new())
+            using (CrawlerContext context = new()) //2021112230
             {
-                return context.Queue.Where(p => p.Url == Url).FirstOrDefault() != null;
+                return context.Queue.Where(p => p.Url == Url).FirstOrDefault() != null; //2021112226
             }
         }
 
         protected bool DoesExistInScan(string Url)
         {
-            using (CrawlerContext context = new())
+            using (CrawlerContext context = new()) //2021112230
             {
-                return context.Scan.Where(p => p.UrlHash == Url.EncryptSHA256()).FirstOrDefault() != null;
+                return context.Scan.Where(p => p.UrlHash == Url.EncryptSHA256()).FirstOrDefault() != null; //2021112226
             }
         }
 
         protected void Dequeue(string Url)
         {
-            using (CrawlerContext context = new())
+            using (CrawlerContext context = new()) //2021112230
             {
                 using (IDbContextTransaction transaction = context.Database.BeginTransaction())
                 {
-                    try
+                    try //2021112205
                     {
-                        var queue = context.Queue.Where(p => p.Url == Url).FirstOrDefault();
+                        var queue = context.Queue.Where(p => p.Url == Url).FirstOrDefault(); //2021112226
                         if (queue != null)
                         {
                             if (DoesExistInQueue(queue.Url))
@@ -121,11 +121,11 @@ namespace WebCrawler.Crawler
 
         protected void Enqueue(Queue item)
         {
-            using (CrawlerContext context = new())
+            using (CrawlerContext context = new()) //2021112230
             {
                 using (IDbContextTransaction transaction = context.Database.BeginTransaction())
                 {
-                    try
+                    try //2021112205
                     {
                         if (!DoesExistInQueue(item.Url))
                         {
