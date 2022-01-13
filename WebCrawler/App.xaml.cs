@@ -1,4 +1,6 @@
 ﻿using DBEntity.Context;
+using System;
+using System.Runtime.ExceptionServices;
 using System.Windows;
 using WebCrawler.Other;
 
@@ -10,34 +12,31 @@ namespace WebCrawler
     /// </summary>
     public partial class App : Application
     {
-        //private volatile bool _insideFirstChanceExceptionHandler;
+        private volatile bool _insideFirstChanceExceptionHandler;
         public App()
         {
-            //AppDomain currentDomain = AppDomain.CurrentDomain;
-            //currentDomain.FirstChanceException += OnFirstChanceException;
+            AppDomain currentDomain = AppDomain.CurrentDomain;
+            currentDomain.FirstChanceException += OnFirstChanceException;
         }
 
-        //private void OnFirstChanceException(object sender, FirstChanceExceptionEventArgs e)
-        //{
-        //    System.Diagnostics.Debug.WriteLine(e.Exception.ToString());
-        //    if (_insideFirstChanceExceptionHandler)
-        //        return;
-        //    try
-        //    {
-        //        MessageBox.Show(e.Exception.Message, "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
-        //        _insideFirstChanceExceptionHandler = true;
-        //        //logger will be added
-        //    }
-        //    catch
-        //    {
+        private void OnFirstChanceException(object? sender, FirstChanceExceptionEventArgs e)
+        {
+            if (_insideFirstChanceExceptionHandler)
+                return;
+            try
+            {
+                MessageBox.Show(e.Exception.Message, "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+                _insideFirstChanceExceptionHandler = true;
+            }
+            catch
+            {
 
-        //    }
-        //    finally
-        //    {
-        //        //_insideFirstChanceExceptionHandler = false;
-        //    }
-        //    //Microsoft.Data.SqlClient.SqlException delete registry data
-        //}
+            }
+            finally
+            {
+                _insideFirstChanceExceptionHandler = false;
+            }
+        }
 
         private void MainApp_Startup(object sender, StartupEventArgs e)
         {

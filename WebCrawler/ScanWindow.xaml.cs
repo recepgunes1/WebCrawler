@@ -47,7 +47,7 @@ namespace WebCrawler
 
         }
 
-        private void UpdateTaskManager(object sender, EventArgs e) //2021112242
+        private void UpdateTaskManager(object? sender, EventArgs e) //2021112242
         {
             Dispatcher.BeginInvoke((Action)(() =>
             {
@@ -69,7 +69,7 @@ namespace WebCrawler
             GC.Collect();
         }
 
-        private void UpdateScanResult(object sender, EventArgs e) //2021112242
+        private void UpdateScanResult(object? sender, EventArgs e) //2021112242
         {
             Dispatcher.BeginInvoke((Action)(() =>
             {
