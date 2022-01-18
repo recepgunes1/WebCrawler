@@ -33,7 +33,7 @@
                 <MenuItem Header="About Me"/>
             </MenuItem>
         </Menu>
-        <TextBox x:Name="txtbxRootUrls" TextWrapping="Wrap" AllowDrop="True" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5" Margin="14" FontWeight="Bold"/>
+        <TextBox x:Name="txtbxRootUrls" TextWrapping="Wrap" AllowDrop="True" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5" Margin="14" FontWeight="Bold" Text="https://toros.edu.tr"/>
         <Button x:Name="btnStart" Content="Start Scan" Grid.Row="1" Grid.Column="5" Margin="14" Click="btnStart_Click">
             <Button.Style>
                 <Style TargetType="{x:Type Button}">

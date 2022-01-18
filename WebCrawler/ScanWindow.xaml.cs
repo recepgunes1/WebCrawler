@@ -40,11 +40,11 @@ namespace WebCrawler
         {
             this.Title = $"{Url} is scanning... | {Scan}";
             dispatcherTimer.Start();
-            Task.Factory.StartNew(() =>
+            Task ScanerTask = new Task(() =>
             {
                 Scan.Scanner();
             });
-
+            ScanerTask.Start();
         }
 
         private void UpdateTaskManager(object? sender, EventArgs e) //2021112242

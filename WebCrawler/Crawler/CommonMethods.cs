@@ -2,6 +2,7 @@
 using DBEntity.Models;
 using HtmlAgilityPack;
 using Microsoft.EntityFrameworkCore.Storage;
+using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
@@ -24,6 +25,7 @@ namespace WebCrawler.Crawler
             {
                 using (HttpClient client = new()) //2021112230
                 {
+                    client.Timeout = new TimeSpan(int.MaxValue);
                     using (HttpResponseMessage response = await client.GetAsync(Target)) //2021112229
                     {
                         using (Stream stream = await response.Content.ReadAsStreamAsync())
@@ -142,9 +144,9 @@ namespace WebCrawler.Crawler
             }
         }
 
-        protected int GetMissingTaskAmount(ConcurrentBag<Task> tasks, int AmoutOfTasks)
+        protected int GetMissingTaskAmount(ConcurrentBag<Task> Tasks, int AmoutOfTasks)
         {
-            var vrCount = tasks.Count(p => p.Status == TaskStatus.Running);
+            var vrCount = Tasks.Count(p => p.Status == TaskStatus.Running);
             if (AmoutOfTasks > vrCount)
                 return AmoutOfTasks - vrCount;
             return 0;
@@ -155,6 +157,22 @@ namespace WebCrawler.Crawler
             if (Tasks.TryDequeue(out var vrTempTask) && vrTempTask != null)
             {
                 vrTempTask.Start();
+            }
+        }
+
+        protected void AggregateTasks(ConcurrentBag<Task> Tasks, int AmoutOfTasks)
+        {
+            var vrCount = Tasks.Count(p => p.Status == TaskStatus.Running);
+            if (AmoutOfTasks < vrCount)
+            {
+                var vrEscessTasks = Tasks.Where(p => p.Status == TaskStatus.Running).Take(vrCount - AmoutOfTasks);
+                if (vrEscessTasks.Count() > 0)
+                {
+                    foreach (var vrTask in vrEscessTasks)
+                    {
+                        vrTask.Wait();
+                    }
+                }
             }
         }
 
