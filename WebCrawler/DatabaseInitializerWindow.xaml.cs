@@ -46,7 +46,14 @@ namespace WebCrawler
                     break;
             }
             registry.SaveRegistry(DatabaseProvider, ConnectionString);
-            CrawlerContext context = new();
+            using(CrawlerContext context = new())
+            {
+                context.Database.EnsureCreated();
+                if (!File.Exists("C:\\true"))
+                {
+                    File.Create("C:\\true");
+                }
+            }
             this.Close(); //2021112212
         }
         private void wndwDatabaseInitializer_Closing(object sender, System.ComponentModel.CancelEventArgs e) //2021112242

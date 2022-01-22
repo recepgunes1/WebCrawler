@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DBEntity.Context;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -113,6 +114,12 @@ namespace WebCrawler
                     rdbtnRSSorSitemap.IsChecked = true;
                     break;
             }
+        }
+
+        private void miExportLogsHTML_Click(object sender, RoutedEventArgs e)
+        {
+            LogOperation operation = new();
+            operation.ExportLog();
         }
     }
 }

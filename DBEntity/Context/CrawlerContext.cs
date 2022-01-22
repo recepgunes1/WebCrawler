@@ -14,14 +14,14 @@ namespace DBEntity.Context
 #pragma warning disable CS8602
 
         public DbSet<Application> Application { get; set; } //2021112201
+        public DbSet<Log> Log { get; set; } //2021112201
         public DbSet<Queue> Queue { get; set; } //2021112201
         public DbSet<Scan> Scan { get; set; } //2021112201
 
         //2021112202 - 2021112212
         public CrawlerContext() : base()
         {
-            Database.SetCommandTimeout(int.MaxValue);
-            Database.EnsureCreated();
+
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -33,10 +33,10 @@ namespace DBEntity.Context
                 switch (DatabaseProiver)
                 {
                     case "MsSQL":
-                        optionsBuilder.UseSqlServer(ConnectionString, p => p.MaxBatchSize(1));
+                        optionsBuilder.UseSqlServer(ConnectionString);
                         break;
                     case "SQLite":
-                        optionsBuilder.UseSqlite(ConnectionString, p => p.MaxBatchSize(1));
+                        optionsBuilder.UseSqlite(ConnectionString);
                         break;
                     case "In-Memory":
                         optionsBuilder.UseInMemoryDatabase(ConnectionString);
@@ -48,6 +48,7 @@ namespace DBEntity.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new ApplicationMapping());
+            modelBuilder.ApplyConfiguration(new LogMapping());
             modelBuilder.ApplyConfiguration(new QueueMapping());
             modelBuilder.ApplyConfiguration(new ScanMapping());
             modelBuilder.UseCollation("Turkish_CI_AI");

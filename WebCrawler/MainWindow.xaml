@@ -30,6 +30,7 @@
                 <MenuItem x:Name="miLoadLastBackup" Header="Load last backup" Click="miLoadLastBackup_Click"/>
             </MenuItem>
             <MenuItem Header="Information">
+                <MenuItem x:Name="miExportLogsHTML" Header="Export all logs as HTML" Click="miExportLogsHTML_Click"/>
                 <MenuItem Header="About Me"/>
             </MenuItem>
         </Menu>

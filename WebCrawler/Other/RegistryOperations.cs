@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using System;
 
 namespace WebCrawler.Other
 {
@@ -11,12 +12,16 @@ namespace WebCrawler.Other
             registryKey.SetValue("Connection String", ConnectionString);
             registryKey.Close();
         }
+
         public bool DoesDatabaseExist()
         {
-            RegistryKey? registryKey = Registry.CurrentUser.OpenSubKey("WebCrawler");
-            if (registryKey == null)
-                return false;
-            return true;
+            using (RegistryKey? registryKey = Registry.CurrentUser.OpenSubKey("WebCrawler"))
+            {
+                if (registryKey == null)
+                    return false;
+                return true;
+            }
         }
     }
 }
+// DESKTOP-QKVAVQO
